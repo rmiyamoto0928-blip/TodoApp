@@ -1,0 +1,29 @@
+{
+  "restaurants": [
+    {
+      "name": "稲葉家",
+      "address": " 岐阜県岐阜市上土居１丁目５−２",
+      "hours": "11:00～14:00 ラストオーダー13:50",
+      "openDays": "",
+      "genre": "ラーメン",
+      "foods": [
+        "特製ラーメン",
+        "まぶし丼",
+        "無限ニンニクお土産"
+      ],
+      "photos": [
+        "/uploads/1777468045198-jpgcpvd3gq.jpeg"
+      ],
+      "price": 1800,
+      "rating": 5,
+      "visitedAt": "2026-03-29",
+      "comment": "過去食べたラーメンで1番おいしかった\n2時間並んでも食べる価値あり",
+      "isFavorite": true,
+      "id": "mok27owhjgcog",
+      "createdAt": "2026-04-29T12:57:07.793Z",
+      "updatedAt": "2026-04-29T13:07:27.302Z"
+    }
+  ],
+  "hotels": [],
+  "spots": []
+}
