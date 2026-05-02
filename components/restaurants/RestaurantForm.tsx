@@ -29,6 +29,7 @@ const defaultForm: FormData = {
   latitude: null,
   longitude: null,
   links: [],
+  memo: '',
 }
 
 const COMMENT_TEMPLATES = [
@@ -288,6 +289,18 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🔗 ホームページ・SNS</label>
         <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
+      </div>
+
+      {/* Memo — separate from 感想 (comment). For per-item price breakdowns etc. */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
+        <textarea
+          value={form.memo ?? ''}
+          onChange={(e) => set('memo', e.target.value)}
+          placeholder={'例：\nラーメン 1200円\n餃子 500円\nビール 600円'}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
       </div>
 
       {/* Favorite */}

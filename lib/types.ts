@@ -61,6 +61,8 @@ export interface Restaurant {
   longitude?: number | null
   /** External URLs (homepage / SNS / 食べログ etc.). Order preserved. */
   links?: string[]
+  /** Free-form memo, separate from `comment`. Used for itemized detail (per-item prices, etc.). */
+  memo?: string
   createdAt: string
   /** Snake-case alias for createdAt — the legacy DB column shape. */
   created_at?: string
@@ -86,6 +88,8 @@ export interface Hotel {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  /** Free-form memo, separate from `comment`. Used for itemized detail (per-item prices, etc.). */
+  memo?: string
   createdAt: string
   created_at?: string
   updatedAt: string
@@ -106,6 +110,8 @@ export interface Spot {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  /** Free-form memo, separate from `comment`. Used for itemized detail (per-item prices, etc.). */
+  memo?: string
   createdAt: string
   created_at?: string
   updatedAt: string
@@ -123,6 +129,8 @@ export interface Plan {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  /** Free-form memo, separate from `comment`. Used for itemized detail (per-item prices, etc.). */
+  memo?: string
   createdAt: string
   created_at?: string
   updatedAt: string

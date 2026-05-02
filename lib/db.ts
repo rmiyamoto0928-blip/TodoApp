@@ -119,6 +119,7 @@ export type RestaurantInput = {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  memo?: string
 }
 
 function rowToRestaurant(row: Row): Restaurant {
@@ -143,6 +144,7 @@ function rowToRestaurant(row: Row): Restaurant {
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
     links: asStringArray(row.links),
+    memo: asString(row.memo),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -169,6 +171,7 @@ function normalizeRestaurant(input: RestaurantInput) {
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
     links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
+    memo: input.memo ?? '',
   }
 }
 
@@ -194,6 +197,7 @@ export const restaurantRepo = {
       { col: 'foods', value: toPgArray(v.foods), cast: '::text[]' },
       { col: 'photos', value: toPgArray(v.photos), cast: '::text[]' },
       { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
+      { col: 'memo', value: v.memo },
       { col: 'price', value: v.price },
       { col: 'rating', value: v.rating },
       { col: 'visited_at', value: v.visited_at },
@@ -222,6 +226,7 @@ export const restaurantRepo = {
       { col: 'foods', value: toPgArray(v.foods), cast: '::text[]' },
       { col: 'photos', value: toPgArray(v.photos), cast: '::text[]' },
       { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
+      { col: 'memo', value: v.memo },
       { col: 'price', value: v.price },
       { col: 'rating', value: v.rating },
       { col: 'visited_at', value: v.visited_at },
@@ -269,6 +274,7 @@ export type HotelInput = {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  memo?: string
 }
 
 function rowToHotel(row: Row): Hotel {
@@ -293,6 +299,7 @@ function rowToHotel(row: Row): Hotel {
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
     links: asStringArray(row.links),
+    memo: asString(row.memo),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -320,6 +327,7 @@ function normalizeHotel(input: HotelInput) {
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
     links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
+    memo: input.memo ?? '',
   }
 }
 
@@ -341,6 +349,8 @@ function hotelFields(v: ReturnType<typeof normalizeHotel>): Field[] {
     { col: 'latitude', value: v.latitude },
     { col: 'longitude', value: v.longitude },
     { col: 'image_url', value: v.image_url },
+    { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
+    { col: 'memo', value: v.memo },
   ]
 }
 
@@ -395,6 +405,7 @@ export type SpotInput = {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  memo?: string
 }
 
 function rowToSpot(row: Row): Spot {
@@ -415,6 +426,7 @@ function rowToSpot(row: Row): Spot {
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
     links: asStringArray(row.links),
+    memo: asString(row.memo),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -438,6 +450,7 @@ function normalizeSpot(input: SpotInput) {
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
     links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
+    memo: input.memo ?? '',
   }
 }
 
@@ -455,6 +468,8 @@ function spotFields(v: ReturnType<typeof normalizeSpot>): Field[] {
     { col: 'latitude', value: v.latitude },
     { col: 'longitude', value: v.longitude },
     { col: 'image_url', value: v.image_url },
+    { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
+    { col: 'memo', value: v.memo },
   ]
 }
 
@@ -506,6 +521,7 @@ export type PlanInput = {
   latitude?: number | null
   longitude?: number | null
   links?: string[]
+  memo?: string
 }
 
 function rowToPlan(row: Row): Plan {
@@ -521,6 +537,7 @@ function rowToPlan(row: Row): Plan {
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
     links: asStringArray(row.links),
+    memo: asString(row.memo),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -539,6 +556,7 @@ function normalizePlan(input: PlanInput) {
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
     links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
+    memo: input.memo ?? '',
   }
 }
 
@@ -554,6 +572,7 @@ function planFields(v: ReturnType<typeof normalizePlan>): Field[] {
     { col: 'latitude', value: v.latitude },
     { col: 'longitude', value: v.longitude },
     { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
+    { col: 'memo', value: v.memo },
   ]
 }
 

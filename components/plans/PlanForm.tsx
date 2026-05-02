@@ -21,6 +21,7 @@ const defaultForm: FormData = {
   latitude: null,
   longitude: null,
   links: [],
+  memo: '',
 }
 
 export default function PlanForm({ initial }: { initial?: Plan }) {
@@ -130,6 +131,18 @@ export default function PlanForm({ initial }: { initial?: Plan }) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🔗 関連リンク</label>
         <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
+      </div>
+
+      {/* Memo — itemized budget etc. */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
+        <textarea
+          value={form.memo ?? ''}
+          onChange={(e) => set('memo', e.target.value)}
+          placeholder={'例：\n交通費 5000円\n宿泊費 12000円\n食費 8000円'}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
       </div>
 
       <div className="flex items-center gap-3 py-1">

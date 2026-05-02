@@ -98,6 +98,13 @@ export default function SpotDetail({ item: initial }: { item: Spot }) {
           </div>
         )}
 
+        {item.memo && (
+          <div className="bg-amber-50 rounded-2xl p-4">
+            <h2 className="text-sm font-bold text-amber-700 mb-1">💰 金額メモ</h2>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{item.memo}</p>
+          </div>
+        )}
+
         <LinksDisplay links={item.links} />
 
         {item.address && (

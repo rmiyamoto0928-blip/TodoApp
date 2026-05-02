@@ -26,6 +26,7 @@ const defaultForm: FormData = {
   latitude: null,
   longitude: null,
   links: [],
+  memo: '',
 }
 
 const COMMENT_TEMPLATES = [
@@ -197,6 +198,18 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🔗 公式サイト・SNS</label>
         <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
+      </div>
+
+      {/* Memo — itemized prices etc. */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
+        <textarea
+          value={form.memo ?? ''}
+          onChange={(e) => set('memo', e.target.value)}
+          placeholder={'例：\n入場料 2000円\n駐車場 500円\nお土産 1500円'}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
       </div>
 
       {/* Favorite */}
