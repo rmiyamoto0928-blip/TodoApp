@@ -42,7 +42,13 @@ const COMMENT_TEMPLATES = [
 
 export default function SpotForm({ initial }: { initial?: Spot }) {
   const router = useRouter()
-  const [form, setForm] = useState<FormData>(initial ? { ...initial } : defaultForm)
+  const [form, setForm] = useState<FormData>(() => {
+    if (!initial) return defaultForm
+    const photos = initial.photos && initial.photos.length > 0
+      ? initial.photos
+      : (initial.image_url ? [initial.image_url] : [])
+    return { ...initial, photos }
+  })
   const [saving, setSaving] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 

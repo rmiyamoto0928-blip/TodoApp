@@ -58,7 +58,15 @@ interface RestaurantFormProps {
 
 export default function RestaurantForm({ initial }: RestaurantFormProps) {
   const router = useRouter()
-  const [form, setForm] = useState<FormData>(initial ? { ...initial } : defaultForm)
+  // When editing legacy records that only have image_url (photos[] empty), seed
+  // photos[0] with image_url so the user sees their existing photo and can add to it.
+  const [form, setForm] = useState<FormData>(() => {
+    if (!initial) return defaultForm
+    const photos = initial.photos && initial.photos.length > 0
+      ? initial.photos
+      : (initial.image_url ? [initial.image_url] : [])
+    return { ...initial, photos }
+  })
   const [foodInput, setFoodInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
