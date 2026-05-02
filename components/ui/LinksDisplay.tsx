@@ -1,30 +1,19 @@
+import LinkIcon from './LinkIcon'
+
 interface LinksDisplayProps {
   links: string[] | undefined
 }
 
 /**
  * Read-only list of links shown on detail pages. Each row is a clickable
- * anchor that opens in a new tab. Server-renderable (no `'use client'`).
+ * anchor that opens in a new tab, with the site's real favicon on the left.
  */
 export default function LinksDisplay({ links }: LinksDisplayProps) {
   if (!links || links.length === 0) return null
 
-  const iconFor = (url: string): string => {
-    const u = url.toLowerCase()
-    if (u.includes('instagram')) return '📷'
-    if (u.includes('twitter') || u.includes('x.com')) return '🐦'
-    if (u.includes('facebook')) return '📘'
-    if (u.includes('youtube')) return '▶️'
-    if (u.includes('tabelog')) return '🍴'
-    if (u.includes('tiktok')) return '🎵'
-    if (u.includes('line.me')) return '💬'
-    return '🔗'
-  }
-
   const labelFor = (url: string): string => {
     try {
-      const host = new URL(url).hostname.replace(/^www\./, '')
-      return host
+      return new URL(url).hostname.replace(/^www\./, '')
     } catch {
       return url
     }
@@ -40,9 +29,9 @@ export default function LinksDisplay({ links }: LinksDisplayProps) {
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl hover:bg-sky-50 transition-colors text-sm"
+            className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-xl hover:bg-sky-50 transition-colors text-sm"
           >
-            <span className="shrink-0">{iconFor(link)}</span>
+            <LinkIcon url={link} size={22} />
             <span className="text-sky-600 truncate">{labelFor(link)}</span>
             <span className="ml-auto text-gray-300 text-xs shrink-0">↗</span>
           </a>

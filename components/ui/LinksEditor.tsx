@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import LinkIcon from './LinkIcon'
 
 interface LinksEditorProps {
   links: string[]
@@ -10,7 +11,7 @@ interface LinksEditorProps {
 /**
  * Editable list of URLs (homepage / SNS / 食べログ / etc.).
  * Each row is a URL input with a remove button. "+ 追加" appends a row.
- * Used by every form so the UX is identical across categories.
+ * The icon next to each row is the real site favicon via LinkIcon.
  */
 export default function LinksEditor({ links, onChange }: LinksEditorProps) {
   const [draft, setDraft] = useState('')
@@ -30,26 +31,13 @@ export default function LinksEditor({ links, onChange }: LinksEditorProps) {
     onChange(links.filter((_, idx) => idx !== i))
   }
 
-  // A small heuristic for the icon next to each URL — purely decorative.
-  const iconFor = (url: string): string => {
-    const u = url.toLowerCase()
-    if (u.includes('instagram')) return '📷'
-    if (u.includes('twitter') || u.includes('x.com')) return '🐦'
-    if (u.includes('facebook')) return '📘'
-    if (u.includes('youtube')) return '▶️'
-    if (u.includes('tabelog')) return '🍴'
-    if (u.includes('tiktok')) return '🎵'
-    if (u.includes('line.me')) return '💬'
-    return '🔗'
-  }
-
   return (
     <div className="space-y-2">
       {links.length > 0 && (
         <div className="space-y-1.5">
           {links.map((link, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span className="text-sm shrink-0">{iconFor(link)}</span>
+              <LinkIcon url={link} size={20} />
               <input
                 type="url"
                 value={link}
