@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { hotelRepo } from '@/lib/db'
 import HotelDetail from '@/components/hotels/HotelDetail'
 
+export const revalidate = 0
+
 export default async function HotelDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = hotelRepo.findById(id)
+  const item = await hotelRepo.findById(id)
   if (!item) notFound()
 
   return (

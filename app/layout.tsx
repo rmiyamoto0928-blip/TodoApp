@@ -30,7 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja" className={`${geist.variable} h-full antialiased`}>
       <head>
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        {/* iOS Safari is happy with SVG since 13.4. Modern Android Chrome
+            installs from manifest.json icons, also SVG. */}
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
       </head>
       <body className="min-h-full bg-[#f8fafc]">
         <PwaInit />

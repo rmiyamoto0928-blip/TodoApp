@@ -16,6 +16,11 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
   const [imgIdx, setImgIdx] = useState(0)
   const [deleting, setDeleting] = useState(false)
 
+  // 💡 画像ソースの判定ロジック
+  // image_url があればそれを使い、なければ photos 配列を使う
+  const hasPhotosArray = item.photos && Array.isArray(item.photos) && item.photos.length > 0;
+  const displayImage = item.image_url || (hasPhotosArray ? item.photos[imgIdx] : null);
+
   const toggleFav = async () => {
     const updated = { ...item, isFavorite: !item.isFavorite }
     await fetch(`/api/restaurants/${item.id}`, {
@@ -38,10 +43,12 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
     <div className="pb-8">
       {/* Image Gallery */}
       <div className="relative bg-gray-100 aspect-[4/3]">
-        {item.photos.length > 0 ? (
+        {/* 💡 修正ポイント：displayImage の有無で判定 */}
+        {displayImage ? (
           <>
-            <Image src={item.photos[imgIdx]} alt={item.name} fill className="object-cover" />
-            {item.photos.length > 1 && (
+            <Image src={displayImage} alt={item.name} fill className="object-cover" />
+            {/* photos配列による複数枚表示がある場合のみドットを表示 */}
+            {hasPhotosArray && item.photos.length > 1 && !item.image_url && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {item.photos.map((_, i) => (
                   <button
@@ -63,7 +70,7 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <span className="text-xs bg-sky-50 text-sky-500 px-2 py-0.5 rounded-full font-medium">
-              {item.genre}
+              {item.genre || '飲食店'}
             </span>
             <h1 className="text-2xl font-bold text-gray-900 mt-1">{item.name}</h1>
           </div>
@@ -72,8 +79,8 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
 
         {/* Rating */}
         <div className="flex items-center gap-2">
-          <CarRating rating={item.rating} size="lg" />
-          <span className="text-lg font-bold text-sky-400">{item.rating}</span>
+          <CarRating rating={item.rating || 0} size="lg" />
+          <span className="text-lg font-bold text-sky-400">{item.rating || 0}</span>
           <span className="text-gray-400 text-sm">/ 5</span>
         </div>
 
@@ -81,10 +88,10 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
         <div className="grid grid-cols-2 gap-3">
           {[
             { icon: '📍', label: '住所', value: item.address },
-            { icon: '💴', label: '金額', value: formatPrice(item.price) },
+            { icon: '💴', label: '金額', value: formatPrice(item.price || 0) },
             { icon: '🕐', label: '営業時間', value: item.hours },
             { icon: '📅', label: '営業日', value: item.openDays },
-            { icon: '🗓', label: '行った日', value: formatDate(item.visitedAt) },
+            { icon: '🗓', label: '行った日', value: formatDate(item.visitedAt || item.created_at || '') },
           ]
             .filter((r) => r.value)
             .map((row) => (
@@ -99,7 +106,7 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
         </div>
 
         {/* Foods */}
-        {item.foods.length > 0 && (
+        {item.foods && item.foods.length > 0 && (
           <div>
             <h2 className="text-sm font-bold text-gray-700 mb-2">🍽 食べたもの</h2>
             <div className="flex flex-wrap gap-2">
@@ -113,10 +120,12 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
         )}
 
         {/* Comment */}
-        {item.comment && (
+        {(item.comment || item.description) && (
           <div className="bg-gray-50 rounded-2xl p-4">
             <h2 className="text-sm font-bold text-gray-700 mb-1">💬 感想</h2>
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.comment}</p>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+              {item.comment || item.description}
+            </p>
           </div>
         )}
 

@@ -37,9 +37,18 @@ export default function PlanPage() {
   const [tab, setTab] = useState<'restaurants' | 'spots'>('spots')
 
   const load = useCallback(async () => {
+    const safe = async <T,>(url: string): Promise<T[]> => {
+      try {
+        const res = await fetch(url)
+        const data = await res.json().catch(() => null)
+        return Array.isArray(data) ? (data as T[]) : []
+      } catch {
+        return []
+      }
+    }
     const [r, s] = await Promise.all([
-      fetch('/api/restaurants').then((res) => res.json()),
-      fetch('/api/spots').then((res) => res.json()),
+      safe<Restaurant>('/api/restaurants'),
+      safe<Spot>('/api/spots'),
     ])
     setRestaurants(r)
     setSpots(s)
@@ -60,11 +69,11 @@ export default function PlanPage() {
   const createPlan = () => {
     const selectedRestaurants: PlanItem[] = restaurants
       .filter((r) => selected.has(r.id))
-      .map((r) => ({ id: r.id, name: r.name, address: r.address, category: 'restaurant', rating: r.rating, photo: r.photos[0], genre: r.genre }))
+      .map((r) => ({ id: r.id, name: r.name, address: r.address, category: 'restaurant', rating: r.rating, photo: r.image_url || r.photos?.[0], genre: r.genre }))
 
     const selectedSpots: PlanItem[] = spots
       .filter((s) => selected.has(s.id))
-      .map((s) => ({ id: s.id, name: s.name, address: s.address, category: 'spot', rating: s.rating, photo: s.photos[0], genre: s.genre }))
+      .map((s) => ({ id: s.id, name: s.name, address: s.address, category: 'spot', rating: s.rating, photo: s.image_url || s.photos?.[0], genre: s.genre }))
 
     const all = [...selectedRestaurants, ...selectedSpots]
     setPlan(sortByGenreBalance(all))
@@ -74,8 +83,8 @@ export default function PlanPage() {
   const categoryLabel = { restaurant: '飲食店', spot: '遊びスポット' }
 
   const allItems: PlanItem[] = tab === 'restaurants'
-    ? restaurants.map((r) => ({ id: r.id, name: r.name, address: r.address, category: 'restaurant', rating: r.rating, photo: r.photos[0], genre: r.genre }))
-    : spots.map((s) => ({ id: s.id, name: s.name, address: s.address, category: 'spot', rating: s.rating, photo: s.photos[0], genre: s.genre }))
+    ? restaurants.map((r) => ({ id: r.id, name: r.name, address: r.address, category: 'restaurant', rating: r.rating, photo: r.image_url || r.photos?.[0], genre: r.genre }))
+    : spots.map((s) => ({ id: s.id, name: s.name, address: s.address, category: 'spot', rating: s.rating, photo: s.image_url || s.photos?.[0], genre: s.genre }))
 
   return (
     <div className="min-h-screen">

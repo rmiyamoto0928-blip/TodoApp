@@ -20,9 +20,21 @@ export default function SpotsPage() {
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/spots')
-    setItems(await res.json())
-    setLoading(false)
+    try {
+      const res = await fetch('/api/spots')
+      const data = await res.json().catch(() => null)
+      if (Array.isArray(data)) setItems(data as Spot[])
+      else {
+        const msg = (data && typeof data === 'object' && 'error' in data ? (data as { error?: string }).error : null) || `request failed (${res.status})`
+        console.error('[spots load]', msg)
+        setItems([])
+      }
+    } catch (err) {
+      console.error('[spots load]', err)
+      setItems([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { load() }, [load])

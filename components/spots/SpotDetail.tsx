@@ -35,10 +35,15 @@ export default function SpotDetail({ item: initial }: { item: Spot }) {
   return (
     <div className="pb-8">
       <div className="relative bg-gray-100 aspect-[4/3]">
-        {item.photos.length > 0 ? (
+        {(item.image_url || item.photos.length > 0) ? (
           <>
-            <Image src={item.photos[imgIdx]} alt={item.name} fill className="object-cover" />
-            {item.photos.length > 1 && (
+            <Image
+              src={item.image_url || item.photos[imgIdx]}
+              alt={item.name}
+              fill
+              className="object-cover"
+            />
+            {!item.image_url && item.photos.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {item.photos.map((_, i) => (
                   <button key={i} onClick={() => setImgIdx(i)}

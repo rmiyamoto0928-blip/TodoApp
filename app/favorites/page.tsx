@@ -19,14 +19,25 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
+    // Defensive: any single API may return `{error: ...}` (e.g. table missing).
+    // Treat non-arrays as empty so the page still renders for the others.
+    const safe = async <T,>(url: string): Promise<T[]> => {
+      try {
+        const res = await fetch(url)
+        const data = await res.json().catch(() => null)
+        return Array.isArray(data) ? (data as T[]) : []
+      } catch {
+        return []
+      }
+    }
     const [r, h, s] = await Promise.all([
-      fetch('/api/restaurants').then((res) => res.json()),
-      fetch('/api/hotels').then((res) => res.json()),
-      fetch('/api/spots').then((res) => res.json()),
+      safe<Restaurant>('/api/restaurants'),
+      safe<Hotel>('/api/hotels'),
+      safe<Spot>('/api/spots'),
     ])
-    setRestaurants(r.filter((x: Restaurant) => x.isFavorite))
-    setHotels(h.filter((x: Hotel) => x.isFavorite))
-    setSpots(s.filter((x: Spot) => x.isFavorite))
+    setRestaurants(r.filter((x) => x.isFavorite))
+    setHotels(h.filter((x) => x.isFavorite))
+    setSpots(s.filter((x) => x.isFavorite))
     setLoading(false)
   }, [])
 

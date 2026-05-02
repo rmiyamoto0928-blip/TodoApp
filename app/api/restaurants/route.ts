@@ -1,13 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { restaurantRepo } from '@/lib/db'
+import { listHandler, createHandler } from '@/lib/apiHelpers'
 
-export async function GET(req: NextRequest) {
-  const items = restaurantRepo.findAll()
-  return NextResponse.json(items)
-}
-
-export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const item = restaurantRepo.create(body)
-  return NextResponse.json(item, { status: 201 })
-}
+export const GET = () => listHandler(restaurantRepo, 'GET /api/restaurants')
+export const POST = (req: NextRequest) => createHandler(req, restaurantRepo, 'POST /api/restaurants')

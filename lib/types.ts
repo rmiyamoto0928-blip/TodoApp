@@ -46,12 +46,22 @@ export interface Restaurant {
   genre: RestaurantGenre
   foods: string[]
   photos: string[]
+  /** First photo, kept for back-compat with components that read image_url. */
+  image_url?: string
+  /** Mirror of comment, kept for back-compat with the legacy column. */
+  description?: string
   price: number
   rating: number
   visitedAt: string
   comment: string
   isFavorite: boolean
+  /** Latitude in WGS84. Null when unknown. */
+  latitude?: number | null
+  /** Longitude in WGS84. Null when unknown. */
+  longitude?: number | null
   createdAt: string
+  /** Snake-case alias for createdAt — the legacy DB column shape. */
+  created_at?: string
   updatedAt: string
 }
 
@@ -61,6 +71,7 @@ export interface Hotel {
   address: string
   category: HotelCategory
   photos: string[]
+  image_url?: string
   price: number
   visitedAt: string
   comment: string
@@ -70,7 +81,10 @@ export interface Hotel {
   breakfast: string
   dinner: string
   isFavorite: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt: string
+  created_at?: string
   updatedAt: string
 }
 
@@ -80,12 +94,32 @@ export interface Spot {
   address: string
   genre: SpotGenre
   photos: string[]
+  image_url?: string
   price: number
   rating: number
   visitedAt: string
   comment: string
   isFavorite: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt: string
+  created_at?: string
+  updatedAt: string
+}
+
+export interface Plan {
+  id: string
+  name: string
+  description: string
+  address: string
+  image_url: string
+  comment: string
+  scheduledAt: string
+  isFavorite: boolean
+  latitude?: number | null
+  longitude?: number | null
+  createdAt: string
+  created_at?: string
   updatedAt: string
 }
 

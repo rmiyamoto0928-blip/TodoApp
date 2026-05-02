@@ -7,7 +7,7 @@ const tabs = [
   { href: '/restaurants', label: '飲食店', icon: '🍜' },
   { href: '/hotels', label: 'ホテル', icon: '🏨' },
   { href: '/spots', label: 'スポット', icon: '🎡' },
-  { href: '/plan', label: 'プラン', icon: '🗺' },
+  { href: '/plans', label: 'プラン', icon: '🗺' },
   { href: '/favorites', label: '♥', icon: '♥' },
 ]
 

@@ -1,24 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { restaurantRepo } from '@/lib/db'
+import { getHandler, updateHandler, deleteHandler } from '@/lib/apiHelpers'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = restaurantRepo.findById(id)
-  if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(item)
+  return getHandler(id, restaurantRepo, `GET /api/restaurants/${id}`)
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const body = await req.json()
-  const item = restaurantRepo.update(id, body)
-  if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(item)
+  return updateHandler(req, id, restaurantRepo, `PUT /api/restaurants/${id}`)
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const ok = restaurantRepo.delete(id)
-  if (!ok) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json({ success: true })
+  return deleteHandler(id, restaurantRepo, `DELETE /api/restaurants/${id}`)
 }

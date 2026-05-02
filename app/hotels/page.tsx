@@ -20,9 +20,21 @@ export default function HotelsPage() {
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/hotels')
-    setItems(await res.json())
-    setLoading(false)
+    try {
+      const res = await fetch('/api/hotels')
+      const data = await res.json().catch(() => null)
+      if (Array.isArray(data)) setItems(data as Hotel[])
+      else {
+        const msg = (data && typeof data === 'object' && 'error' in data ? (data as { error?: string }).error : null) || `request failed (${res.status})`
+        console.error('[hotels load]', msg)
+        setItems([])
+      }
+    } catch (err) {
+      console.error('[hotels load]', err)
+      setItems([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { load() }, [load])

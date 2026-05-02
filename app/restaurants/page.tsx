@@ -8,7 +8,7 @@ import SearchBar from '@/components/ui/SearchBar'
 import FilterTags from '@/components/ui/FilterTags'
 import SortDropdown from '@/components/ui/SortDropdown'
 import RecommendCard from '@/components/ui/RecommendCard'
-import { sortRestaurants, searchFilter, RESTAURANT_GENRES } from '@/lib/utils'
+import { sortRestaurants, searchFilter, RESTAURANT_GENRES, type LatLng } from '@/lib/utils'
 
 export default function RestaurantsPage() {
   const [items, setItems] = useState<Restaurant[]>([])
@@ -19,11 +19,35 @@ export default function RestaurantsPage() {
   const [favOnly, setFavOnly] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [userLocation, setUserLocation] = useState<LatLng | null>(null)
+
+  // Best-effort current location, requested once on mount. Failure is silent —
+  // the only consequence is that distance badges don't render.
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+    )
+  }, [])
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/restaurants')
-    setItems(await res.json())
-    setLoading(false)
+    try {
+      const res = await fetch('/api/restaurants')
+      const data = await res.json().catch(() => null)
+      if (Array.isArray(data)) setItems(data as Restaurant[])
+      else {
+        const msg = (data && typeof data === 'object' && 'error' in data ? (data as { error?: string }).error : null) || `request failed (${res.status})`
+        console.error('[restaurants load]', msg)
+        setItems([])
+      }
+    } catch (err) {
+      console.error('[restaurants load]', err)
+      setItems([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { load() }, [load])
@@ -122,6 +146,7 @@ export default function RestaurantsPage() {
                 item={item}
                 rank={rankMode ? i + 1 : undefined}
                 onFavoriteToggle={toggleFavorite}
+                userLocation={userLocation}
               />
             ))}
           </div>

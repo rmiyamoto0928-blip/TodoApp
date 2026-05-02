@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { spotRepo } from '@/lib/db'
 import SpotDetail from '@/components/spots/SpotDetail'
 
+export const revalidate = 0
+
 export default async function SpotDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = spotRepo.findById(id)
+  const item = await spotRepo.findById(id)
   if (!item) notFound()
 
   return (

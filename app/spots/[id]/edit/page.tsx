@@ -5,7 +5,7 @@ import SpotForm from '@/components/spots/SpotForm'
 
 export default async function EditSpotPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = spotRepo.findById(id)
+  const item = await spotRepo.findById(id)
   if (!item) notFound()
 
   return (

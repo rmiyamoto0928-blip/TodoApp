@@ -19,8 +19,8 @@ export default function SpotCard({ item, rank, onFavoriteToggle }: SpotCardProps
     <div className="relative bg-white rounded-2xl shadow-sm overflow-hidden active:scale-[0.98] transition-transform duration-150">
       <Link href={`/spots/${item.id}`} className="block">
         <div className="relative aspect-[4/3] bg-gray-100">
-          {item.photos[0] ? (
-            <Image src={item.photos[0]} alt={item.name} fill className="object-cover" />
+          {(item.image_url || item.photos?.[0]) ? (
+            <Image src={item.image_url || item.photos[0]} alt={item.name} fill className="object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl text-gray-300">🎡</div>
           )}

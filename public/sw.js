@@ -1,5 +1,6 @@
-const CACHE_NAME = 'review-app-v1'
-const STATIC_ASSETS = ['/', '/restaurants', '/hotels', '/spots', '/plan', '/favorites']
+// Bump this when changing cached routes / icon so old clients self-evict.
+const CACHE_NAME = 'review-app-v2'
+const STATIC_ASSETS = ['/', '/restaurants', '/hotels', '/spots', '/plan', '/plans', '/favorites']
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -37,8 +38,8 @@ self.addEventListener('push', (e) => {
   e.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
+      icon: '/icon.svg',
+      badge: '/icon.svg',
     })
   )
 })

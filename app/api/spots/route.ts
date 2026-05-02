@@ -1,12 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { spotRepo } from '@/lib/db'
+import { listHandler, createHandler } from '@/lib/apiHelpers'
 
-export async function GET() {
-  return NextResponse.json(spotRepo.findAll())
-}
-
-export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const item = spotRepo.create(body)
-  return NextResponse.json(item, { status: 201 })
-}
+export const GET = () => listHandler(spotRepo, 'GET /api/spots')
+export const POST = (req: NextRequest) => createHandler(req, spotRepo, 'POST /api/spots')

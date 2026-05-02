@@ -4,11 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Restaurant, RestaurantGenre } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
-import ImageUpload from '@/components/ui/ImageUpload'
 import VoiceInput from '@/components/ui/VoiceInput'
+import AddressLocator from '@/components/ui/AddressLocator'
+import SingleImageUpload from '@/components/ui/SingleImageUpload'
 import { RESTAURANT_GENRES } from '@/lib/utils'
 
-type FormData = Omit<Restaurant, 'id' | 'createdAt' | 'updatedAt'>
+type FormData = Omit<Restaurant, 'id' | 'createdAt' | 'updatedAt' | 'created_at'>
 
 const defaultForm: FormData = {
   name: '',
@@ -18,11 +19,14 @@ const defaultForm: FormData = {
   genre: 'その他',
   foods: [],
   photos: [],
+  image_url: '',
   price: 0,
   rating: 0,
   visitedAt: new Date().toISOString().slice(0, 10),
   comment: '',
   isFavorite: false,
+  latitude: null,
+  longitude: null,
 }
 
 const COMMENT_TEMPLATES = [
@@ -54,6 +58,7 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
   const [form, setForm] = useState<FormData>(initial ? { ...initial } : defaultForm)
   const [foodInput, setFoodInput] = useState('')
   const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const set = (key: keyof FormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -74,17 +79,29 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.name.trim()) return
+    setSubmitError(null)
     setSaving(true)
     try {
       const url = initial ? `/api/restaurants/${initial.id}` : '/api/restaurants'
       const method = initial ? 'PUT' : 'POST'
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
+      if (!res.ok) {
+        // Read the error message the API surfaces so the user sees the real cause
+        // (e.g. `column "xxx" does not exist`) instead of a silent redirect.
+        const data = (await res.json().catch(() => null)) as { error?: string } | null
+        const msg = data?.error || `request failed (${res.status})`
+        throw new Error(msg)
+      }
       router.push('/restaurants')
       router.refresh()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setSubmitError(msg)
+      console.error('[restaurant submit]', err)
     } finally {
       setSaving(false)
     }
@@ -109,19 +126,16 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
         </div>
       </div>
 
-      {/* Address */}
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">住所・最寄り駅</label>
-        <div className="flex gap-2">
-          <input
-            value={form.address}
-            onChange={(e) => set('address', e.target.value)}
-            placeholder="例：東京都渋谷区、渋谷駅近く"
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-          <VoiceInput onResult={(t) => set('address', t)} />
-        </div>
-      </div>
+      {/* Address (with geolocation + reverse geocoding) */}
+      <AddressLocator
+        address={form.address}
+        latitude={form.latitude}
+        longitude={form.longitude}
+        onChange={({ address, latitude, longitude }) =>
+          setForm((prev) => ({ ...prev, address, latitude, longitude }))
+        }
+        placeholder="例：東京都渋谷区、渋谷駅近く"
+      />
 
       {/* Genre */}
       <div className="space-y-1">
@@ -262,10 +276,10 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
         </div>
       </div>
 
-      {/* Photos */}
+      {/* Photo (single image stored in image_url column) */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">📷 写真</label>
-        <ImageUpload photos={form.photos} onChange={(p) => set('photos', p)} />
+        <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
       </div>
 
       {/* Favorite */}
@@ -287,6 +301,9 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
       >
         {saving ? '保存中...' : initial ? '更新する' : '追加する'}
       </button>
+      {submitError && (
+        <p className="text-sm text-red-500 text-center break-all">{submitError}</p>
+      )}
     </form>
   )
 }

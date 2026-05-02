@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#38BDF8"/>
+  <g transform="translate(256 256)" fill="#ffffff">
+    <!-- Notebook body -->
+    <rect x="-128" y="-160" width="256" height="320" rx="28" fill="#ffffff"/>
+    <!-- Spiral binding -->
+    <g fill="#0EA5E9">
+      <circle cx="-100" cy="-128" r="8"/>
+      <circle cx="-100" cy="-64" r="8"/>
+      <circle cx="-100" cy="0" r="8"/>
+      <circle cx="-100" cy="64" r="8"/>
+      <circle cx="-100" cy="128" r="8"/>
+    </g>
+    <!-- Lines -->
+    <g stroke="#BAE6FD" stroke-width="6" stroke-linecap="round">
+      <line x1="-60" y1="-100" x2="100" y2="-100"/>
+      <line x1="-60" y1="-50" x2="100" y2="-50"/>
+      <line x1="-60" y1="0" x2="100" y2="0"/>
+      <line x1="-60" y1="50" x2="60" y2="50"/>
+    </g>
+    <!-- Heart -->
+    <path transform="translate(0 110)" fill="#F87171" d="M0 30 C-26 4 -52 -8 -52 -28 C-52 -46 -36 -56 -22 -56 C-12 -56 -4 -50 0 -42 C4 -50 12 -56 22 -56 C36 -56 52 -46 52 -28 C52 -8 26 4 0 30 Z"/>
+  </g>
+</svg>

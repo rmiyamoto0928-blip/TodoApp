@@ -4,22 +4,26 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Spot, SpotGenre } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
-import ImageUpload from '@/components/ui/ImageUpload'
 import VoiceInput from '@/components/ui/VoiceInput'
+import AddressLocator from '@/components/ui/AddressLocator'
+import SingleImageUpload from '@/components/ui/SingleImageUpload'
 import { SPOT_GENRES } from '@/lib/utils'
 
-type FormData = Omit<Spot, 'id' | 'createdAt' | 'updatedAt'>
+type FormData = Omit<Spot, 'id' | 'createdAt' | 'updatedAt' | 'created_at'>
 
 const defaultForm: FormData = {
   name: '',
   address: '',
   genre: 'その他',
   photos: [],
+  image_url: '',
   price: 0,
   rating: 0,
   visitedAt: new Date().toISOString().slice(0, 10),
   comment: '',
   isFavorite: false,
+  latitude: null,
+  longitude: null,
 }
 
 const COMMENT_TEMPLATES = [
@@ -37,6 +41,7 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
   const router = useRouter()
   const [form, setForm] = useState<FormData>(initial ? { ...initial } : defaultForm)
   const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const set = (key: keyof FormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -48,17 +53,26 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.name.trim()) return
+    setSubmitError(null)
     setSaving(true)
     try {
       const url = initial ? `/api/spots/${initial.id}` : '/api/spots'
       const method = initial ? 'PUT' : 'POST'
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null
+        throw new Error(data?.error || `request failed (${res.status})`)
+      }
       router.push('/spots')
       router.refresh()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setSubmitError(msg)
+      console.error('[spot submit]', err)
     } finally {
       setSaving(false)
     }
@@ -66,6 +80,7 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 pb-6">
+      {/* Name */}
       <div className="space-y-1">
         <label className="text-sm font-semibold text-gray-700">場所名 *</label>
         <div className="flex gap-2">
@@ -80,19 +95,17 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">住所・最寄り駅</label>
-        <div className="flex gap-2">
-          <input
-            value={form.address}
-            onChange={(e) => set('address', e.target.value)}
-            placeholder="例：千葉県浦安市"
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-          <VoiceInput onResult={(t) => set('address', t)} />
-        </div>
-      </div>
+      <AddressLocator
+        address={form.address}
+        latitude={form.latitude}
+        longitude={form.longitude}
+        onChange={({ address, latitude, longitude }) =>
+          setForm((prev) => ({ ...prev, address, latitude, longitude }))
+        }
+        placeholder="例：千葉県浦安市"
+      />
 
+      {/* Genre */}
       <div className="space-y-1">
         <label className="text-sm font-semibold text-gray-700">ジャンル</label>
         <div className="flex flex-wrap gap-1.5">
@@ -112,6 +125,7 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </div>
       </div>
 
+      {/* Price & Date */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <label className="text-sm font-semibold text-gray-700">💴 金額（円）</label>
@@ -135,6 +149,7 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </div>
       </div>
 
+      {/* Rating */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🚗 総合評価</label>
         <CarRating rating={form.rating} size="lg" interactive onChange={(v) => set('rating', v)} />
@@ -143,6 +158,7 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </p>
       </div>
 
+      {/* Comment */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">💬 感想</label>
         <div className="flex flex-wrap gap-1.5 mb-2">
@@ -169,11 +185,13 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </div>
       </div>
 
+      {/* Photo */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">📷 写真</label>
-        <ImageUpload photos={form.photos} onChange={(p) => set('photos', p)} />
+        <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
       </div>
 
+      {/* Favorite */}
       <div className="flex items-center gap-3 py-1">
         <label className="text-sm font-semibold text-gray-700">お気に入り</label>
         <button
@@ -192,6 +210,9 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
       >
         {saving ? '保存中...' : initial ? '更新する' : '追加する'}
       </button>
+      {submitError && (
+        <p className="text-sm text-red-500 text-center break-all">{submitError}</p>
+      )}
     </form>
   )
 }

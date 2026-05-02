@@ -5,7 +5,7 @@ import HotelForm from '@/components/hotels/HotelForm'
 
 export default async function EditHotelPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = hotelRepo.findById(id)
+  const item = await hotelRepo.findById(id)
   if (!item) notFound()
 
   return (
