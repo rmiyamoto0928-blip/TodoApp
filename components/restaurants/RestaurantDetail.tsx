@@ -8,6 +8,7 @@ import { Restaurant } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
 import FavoriteButton from '@/components/ui/FavoriteButton'
 import MapEmbed from '@/components/ui/MapEmbed'
+import LinksDisplay from '@/components/ui/LinksDisplay'
 import { formatPrice, formatDate } from '@/lib/utils'
 
 export default function RestaurantDetail({ item: initial }: { item: Restaurant }) {
@@ -128,6 +129,9 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
             </p>
           </div>
         )}
+
+        {/* Links */}
+        <LinksDisplay links={item.links} />
 
         {/* Map */}
         {item.address && (

@@ -8,6 +8,7 @@ import { Spot } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
 import FavoriteButton from '@/components/ui/FavoriteButton'
 import MapEmbed from '@/components/ui/MapEmbed'
+import LinksDisplay from '@/components/ui/LinksDisplay'
 import { formatPrice, formatDate } from '@/lib/utils'
 
 export default function SpotDetail({ item: initial }: { item: Spot }) {
@@ -96,6 +97,8 @@ export default function SpotDetail({ item: initial }: { item: Spot }) {
             <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.comment}</p>
           </div>
         )}
+
+        <LinksDisplay links={item.links} />
 
         {item.address && (
           <div>

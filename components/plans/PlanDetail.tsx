@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Plan } from '@/lib/types'
 import FavoriteButton from '@/components/ui/FavoriteButton'
 import MapEmbed from '@/components/ui/MapEmbed'
+import LinksDisplay from '@/components/ui/LinksDisplay'
 import { formatDate } from '@/lib/utils'
 
 export default function PlanDetail({ item: initial }: { item: Plan }) {
@@ -75,6 +76,8 @@ export default function PlanDetail({ item: initial }: { item: Plan }) {
             <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.comment}</p>
           </div>
         )}
+
+        <LinksDisplay links={item.links} />
 
         {item.address && (
           <div>

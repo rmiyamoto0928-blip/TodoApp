@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import Image from 'next/image'
+import { upload } from '@vercel/blob/client'
 
 interface SingleImageUploadProps {
   imageUrl: string
@@ -9,10 +10,11 @@ interface SingleImageUploadProps {
 }
 
 /**
- * Single-image uploader. Streams the file body to /api/upload (which forwards
- * to Vercel Blob `put()`), then stores the returned `blob.url` as a single
- * string. Used by all forms (restaurants/hotels/spots/plans) so the upload
- * path is identical everywhere.
+ * Single-image uploader using Vercel Blob client-direct upload.
+ *
+ * The file goes browser → Vercel Blob storage directly. Our /api/upload only
+ * issues a signed token (small JSON), so we sidestep the serverless 4.5 MB
+ * payload limit that caused FUNCTION_PAYLOAD_TOO_LARGE 413s on phone photos.
  */
 export default function SingleImageUpload({ imageUrl, onChange }: SingleImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -26,17 +28,11 @@ export default function SingleImageUpload({ imageUrl, onChange }: SingleImageUpl
     setError(null)
     setUploading(true)
     try {
-      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-        method: 'POST',
-        headers: { 'content-type': file.type },
-        body: file,
+      const blob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
+        contentType: file.type,
       })
-      if (!res.ok) {
-        const msg = await res.text().catch(() => '')
-        throw new Error(`upload failed (${res.status}) ${msg}`)
-      }
-      const blob = (await res.json()) as { url?: string; error?: string }
-      if (!blob.url) throw new Error(blob.error || 'upload returned no url')
       onChange(blob.url)
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)

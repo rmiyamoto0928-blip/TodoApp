@@ -1,36 +1,56 @@
-import { put } from '@vercel/blob';
-import { NextResponse } from 'next/server';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
+import { NextResponse } from 'next/server'
 
+// Client-direct upload: the browser uses `upload()` from `@vercel/blob/client`,
+// which makes 2 requests:
+//   1) POST here for a signed token (tiny JSON body)
+//   2) PUT directly to Blob storage with the file bytes (no proxy through us)
+// This bypasses Vercel's 4.5MB function payload limit (the cause of the
+// `FUNCTION_PAYLOAD_TOO_LARGE` 413 errors when uploading phone photos).
+//
+// See https://vercel.com/docs/storage/vercel-blob/client-uploads
 export async function POST(request: Request): Promise<NextResponse> {
-  const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
-
-  if (!filename || !request.body) {
-    return NextResponse.json({ error: 'Filename or body missing' }, { status: 400 });
-  }
-
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    // The token is the typical missing piece on Vercel deployments — surface it
-    // explicitly so the client error banner says exactly what to do.
     return NextResponse.json(
-      { error: 'BLOB_READ_WRITE_TOKEN is not set on this deployment. Connect a Vercel Blob store to the project.' },
+      { error: 'BLOB_READ_WRITE_TOKEN is not set on this deployment.' },
       { status: 500 }
-    );
+    )
   }
+
+  const body = (await request.json()) as HandleUploadBody
 
   try {
-    // addRandomSuffix: true → 同名のファイル（例: IMG_0001.jpg）を何度アップしても
-    // ユニークな URL になり、`This blob already exists` エラーを回避できる。
-    const blob = await put(filename, request.body, {
-      access: 'public',
-      addRandomSuffix: true,
-    });
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async () => {
+        // Constrain what the client can upload. addRandomSuffix prevents
+        // "blob already exists" collisions when two photos share a name.
+        return {
+          allowedContentTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/gif',
+            'image/heic',
+            'image/heif',
+          ],
+          addRandomSuffix: true,
+          // 20 MB ceiling. Plenty for phone photos; rejects accidental videos.
+          maximumSizeInBytes: 20 * 1024 * 1024,
+        }
+      },
+      onUploadCompleted: async ({ blob }) => {
+        // Hook for post-upload work. Nothing to do for now — the form will
+        // store blob.url in `image_url` via its own state.
+        console.log('blob uploaded:', blob.url)
+      },
+    })
 
-    return NextResponse.json(blob);
-  } catch (error) {
-    // Surface the underlying error message instead of a generic "Upload failed".
-    const message = error instanceof Error ? error.message : String(error);
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: `Upload failed: ${message}` }, { status: 500 });
+    return NextResponse.json(jsonResponse)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('Upload error:', err)
+    return NextResponse.json({ error: `Upload failed: ${message}` }, { status: 400 })
   }
 }

@@ -7,6 +7,7 @@ import CarRating from '@/components/ui/CarRating'
 import VoiceInput from '@/components/ui/VoiceInput'
 import AddressLocator from '@/components/ui/AddressLocator'
 import SingleImageUpload from '@/components/ui/SingleImageUpload'
+import LinksEditor from '@/components/ui/LinksEditor'
 import { SPOT_GENRES } from '@/lib/utils'
 
 type FormData = Omit<Spot, 'id' | 'createdAt' | 'updatedAt' | 'created_at'>
@@ -24,6 +25,7 @@ const defaultForm: FormData = {
   isFavorite: false,
   latitude: null,
   longitude: null,
+  links: [],
 }
 
 const COMMENT_TEMPLATES = [
@@ -189,6 +191,12 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">📷 写真</label>
         <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
+      </div>
+
+      {/* Links */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">🔗 公式サイト・SNS</label>
+        <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
       </div>
 
       {/* Favorite */}

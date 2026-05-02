@@ -7,6 +7,7 @@ import CarRating from '@/components/ui/CarRating'
 import VoiceInput from '@/components/ui/VoiceInput'
 import AddressLocator from '@/components/ui/AddressLocator'
 import SingleImageUpload from '@/components/ui/SingleImageUpload'
+import LinksEditor from '@/components/ui/LinksEditor'
 import { RESTAURANT_GENRES } from '@/lib/utils'
 
 type FormData = Omit<Restaurant, 'id' | 'createdAt' | 'updatedAt' | 'created_at'>
@@ -27,6 +28,7 @@ const defaultForm: FormData = {
   isFavorite: false,
   latitude: null,
   longitude: null,
+  links: [],
 }
 
 const COMMENT_TEMPLATES = [
@@ -280,6 +282,12 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">📷 写真</label>
         <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
+      </div>
+
+      {/* Links (homepage / SNS / 食べログ etc.) */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">🔗 ホームページ・SNS</label>
+        <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
       </div>
 
       {/* Favorite */}

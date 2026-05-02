@@ -59,6 +59,8 @@ export interface Restaurant {
   latitude?: number | null
   /** Longitude in WGS84. Null when unknown. */
   longitude?: number | null
+  /** External URLs (homepage / SNS / 食べログ etc.). Order preserved. */
+  links?: string[]
   createdAt: string
   /** Snake-case alias for createdAt — the legacy DB column shape. */
   created_at?: string
@@ -83,6 +85,7 @@ export interface Hotel {
   isFavorite: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
   createdAt: string
   created_at?: string
   updatedAt: string
@@ -102,6 +105,7 @@ export interface Spot {
   isFavorite: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
   createdAt: string
   created_at?: string
   updatedAt: string
@@ -118,6 +122,7 @@ export interface Plan {
   isFavorite: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
   createdAt: string
   created_at?: string
   updatedAt: string

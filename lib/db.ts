@@ -118,6 +118,7 @@ export type RestaurantInput = {
   isFavorite?: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
 }
 
 function rowToRestaurant(row: Row): Restaurant {
@@ -141,6 +142,7 @@ function rowToRestaurant(row: Row): Restaurant {
     isFavorite: asBool(row.is_favorite),
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
+    links: asStringArray(row.links),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -166,6 +168,7 @@ function normalizeRestaurant(input: RestaurantInput) {
     is_favorite: !!input.isFavorite,
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
+    links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
   }
 }
 
@@ -190,6 +193,7 @@ export const restaurantRepo = {
       { col: 'genre', value: v.genre },
       { col: 'foods', value: toPgArray(v.foods), cast: '::text[]' },
       { col: 'photos', value: toPgArray(v.photos), cast: '::text[]' },
+      { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
       { col: 'price', value: v.price },
       { col: 'rating', value: v.rating },
       { col: 'visited_at', value: v.visited_at },
@@ -217,6 +221,7 @@ export const restaurantRepo = {
       { col: 'genre', value: v.genre },
       { col: 'foods', value: toPgArray(v.foods), cast: '::text[]' },
       { col: 'photos', value: toPgArray(v.photos), cast: '::text[]' },
+      { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
       { col: 'price', value: v.price },
       { col: 'rating', value: v.rating },
       { col: 'visited_at', value: v.visited_at },
@@ -263,6 +268,7 @@ export type HotelInput = {
   isFavorite?: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
 }
 
 function rowToHotel(row: Row): Hotel {
@@ -286,6 +292,7 @@ function rowToHotel(row: Row): Hotel {
     isFavorite: asBool(row.is_favorite),
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
+    links: asStringArray(row.links),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -312,6 +319,7 @@ function normalizeHotel(input: HotelInput) {
     is_favorite: !!input.isFavorite,
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
+    links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
   }
 }
 
@@ -386,6 +394,7 @@ export type SpotInput = {
   isFavorite?: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
 }
 
 function rowToSpot(row: Row): Spot {
@@ -405,6 +414,7 @@ function rowToSpot(row: Row): Spot {
     isFavorite: asBool(row.is_favorite),
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
+    links: asStringArray(row.links),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -427,6 +437,7 @@ function normalizeSpot(input: SpotInput) {
     is_favorite: !!input.isFavorite,
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
+    links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
   }
 }
 
@@ -494,6 +505,7 @@ export type PlanInput = {
   isFavorite?: boolean
   latitude?: number | null
   longitude?: number | null
+  links?: string[]
 }
 
 function rowToPlan(row: Row): Plan {
@@ -508,6 +520,7 @@ function rowToPlan(row: Row): Plan {
     isFavorite: asBool(row.is_favorite),
     latitude: asNumberOrNull(row.latitude),
     longitude: asNumberOrNull(row.longitude),
+    links: asStringArray(row.links),
     createdAt: asISO(row.created_at),
     created_at: asISO(row.created_at),
     updatedAt: asISO(row.updated_at),
@@ -525,6 +538,7 @@ function normalizePlan(input: PlanInput) {
     is_favorite: !!input.isFavorite,
     latitude: input.latitude == null ? null : Number(input.latitude),
     longitude: input.longitude == null ? null : Number(input.longitude),
+    links: (input.links ?? []).filter((s) => typeof s === 'string' && s.trim() !== ''),
   }
 }
 
@@ -539,6 +553,7 @@ function planFields(v: ReturnType<typeof normalizePlan>): Field[] {
     { col: 'is_favorite', value: v.is_favorite },
     { col: 'latitude', value: v.latitude },
     { col: 'longitude', value: v.longitude },
+    { col: 'links', value: toPgArray(v.links), cast: '::text[]' },
   ]
 }
 

@@ -6,6 +6,7 @@ import { Plan } from '@/lib/types'
 import VoiceInput from '@/components/ui/VoiceInput'
 import AddressLocator from '@/components/ui/AddressLocator'
 import SingleImageUpload from '@/components/ui/SingleImageUpload'
+import LinksEditor from '@/components/ui/LinksEditor'
 
 type FormData = Omit<Plan, 'id' | 'createdAt' | 'updatedAt' | 'created_at'>
 
@@ -19,6 +20,7 @@ const defaultForm: FormData = {
   isFavorite: false,
   latitude: null,
   longitude: null,
+  links: [],
 }
 
 export default function PlanForm({ initial }: { initial?: Plan }) {
@@ -122,6 +124,12 @@ export default function PlanForm({ initial }: { initial?: Plan }) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">📷 写真</label>
         <SingleImageUpload imageUrl={form.image_url} onChange={(url) => set('image_url', url)} />
+      </div>
+
+      {/* Links */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">🔗 関連リンク</label>
+        <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
       </div>
 
       <div className="flex items-center gap-3 py-1">
