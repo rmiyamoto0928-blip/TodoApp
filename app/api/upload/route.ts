@@ -19,8 +19,11 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
+    // addRandomSuffix: true → 同名のファイル（例: IMG_0001.jpg）を何度アップしても
+    // ユニークな URL になり、`This blob already exists` エラーを回避できる。
     const blob = await put(filename, request.body, {
       access: 'public',
+      addRandomSuffix: true,
     });
 
     return NextResponse.json(blob);
