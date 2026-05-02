@@ -25,14 +25,16 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
   const remaining = Math.max(0, maxPhotos - photos.length)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    // IMPORTANT: snapshot the FileList into a plain array BEFORE clearing the
+    // input. iOS Safari nullifies the live FileList the moment we set value=''.
+    const fileArray = e.target.files ? Array.from(e.target.files) : []
     e.target.value = ''
-    if (!files || files.length === 0) return
+    if (fileArray.length === 0) return
     setError(null)
     setUploading(true)
 
     // Allow multi-select but cap at remaining slots.
-    const toUpload = Array.from(files).slice(0, remaining)
+    const toUpload = fileArray.slice(0, remaining)
     const uploaded: string[] = []
     try {
       for (const file of toUpload) {
