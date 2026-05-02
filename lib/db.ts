@@ -153,7 +153,9 @@ function rowToRestaurant(row: Row): Restaurant {
 
 function normalizeRestaurant(input: RestaurantInput) {
   const photos = input.photos ?? []
-  const image_url = (input.image_url && input.image_url.trim()) || photos[0] || ''
+  // photos が空でない限り、image_url は必ず photos[0] に揃える。
+  // 並び替え・削除時に image_url が古い URL に取り残されない。
+  const image_url = photos.length > 0 ? photos[0] : (input.image_url?.trim() || '')
   return {
     name: input.name?.trim() ?? '',
     address: input.address ?? '',
@@ -308,7 +310,9 @@ function rowToHotel(row: Row): Hotel {
 
 function normalizeHotel(input: HotelInput) {
   const photos = input.photos ?? []
-  const image_url = (input.image_url && input.image_url.trim()) || photos[0] || ''
+  // photos が空でない限り、image_url は必ず photos[0] に揃える。
+  // 並び替え・削除時に image_url が古い URL に取り残されない。
+  const image_url = photos.length > 0 ? photos[0] : (input.image_url?.trim() || '')
   return {
     name: input.name?.trim() ?? '',
     address: input.address ?? '',
@@ -435,7 +439,9 @@ function rowToSpot(row: Row): Spot {
 
 function normalizeSpot(input: SpotInput) {
   const photos = input.photos ?? []
-  const image_url = (input.image_url && input.image_url.trim()) || photos[0] || ''
+  // photos が空でない限り、image_url は必ず photos[0] に揃える。
+  // 並び替え・削除時に image_url が古い URL に取り残されない。
+  const image_url = photos.length > 0 ? photos[0] : (input.image_url?.trim() || '')
   return {
     name: input.name?.trim() ?? '',
     address: input.address ?? '',

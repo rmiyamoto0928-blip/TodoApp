@@ -6,7 +6,7 @@ import { Spot, SpotGenre } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
 import VoiceInput from '@/components/ui/VoiceInput'
 import AddressLocator from '@/components/ui/AddressLocator'
-import SingleImageUpload from '@/components/ui/SingleImageUpload'
+import MultiImageUpload from '@/components/ui/MultiImageUpload'
 import LinksEditor from '@/components/ui/LinksEditor'
 import { SPOT_GENRES } from '@/lib/utils'
 
@@ -187,10 +187,10 @@ export default function SpotForm({ initial }: { initial?: Spot }) {
         </div>
       </div>
 
-      {/* Photo */}
+      {/* Photos — up to 5 */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">📷 写真</label>
-        <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
+        <label className="text-sm font-semibold text-gray-700">📷 写真（最大5枚）</label>
+        <MultiImageUpload photos={form.photos} onChange={(p) => set('photos', p)} />
       </div>
 
       {/* Links */}

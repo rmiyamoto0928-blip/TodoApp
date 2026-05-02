@@ -38,15 +38,15 @@ export default function HotelDetail({ item: initial }: { item: Hotel }) {
   return (
     <div className="pb-8">
       <div className="relative bg-gray-100 aspect-[4/3]">
-        {(item.image_url || item.photos.length > 0) ? (
+        {(item.photos.length > 0 || item.image_url) ? (
           <>
             <Image
-              src={item.image_url || item.photos[imgIdx]}
+              src={item.photos.length > 0 ? item.photos[imgIdx] : (item.image_url ?? '')}
               alt={item.name}
               fill
               className="object-cover"
             />
-            {!item.image_url && item.photos.length > 1 && (
+            {item.photos.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {item.photos.map((_, i) => (
                   <button key={i} onClick={() => setImgIdx(i)}

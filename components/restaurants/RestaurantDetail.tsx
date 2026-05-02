@@ -17,10 +17,10 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
   const [imgIdx, setImgIdx] = useState(0)
   const [deleting, setDeleting] = useState(false)
 
-  // 💡 画像ソースの判定ロジック
-  // image_url があればそれを使い、なければ photos 配列を使う
-  const hasPhotosArray = item.photos && Array.isArray(item.photos) && item.photos.length > 0;
-  const displayImage = item.image_url || (hasPhotosArray ? item.photos[imgIdx] : null);
+  // 画像ソース: photos[] が複数ある場合はスワイプ用に photos[imgIdx] を使う。
+  // 旧データ（photos が空 / image_url のみ）は image_url にフォールバック。
+  const hasPhotosArray = item.photos && Array.isArray(item.photos) && item.photos.length > 0
+  const displayImage = hasPhotosArray ? item.photos[imgIdx] : (item.image_url || null)
 
   const toggleFav = async () => {
     const updated = { ...item, isFavorite: !item.isFavorite }
@@ -49,7 +49,7 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
           <>
             <Image src={displayImage} alt={item.name} fill className="object-cover" />
             {/* photos配列による複数枚表示がある場合のみドットを表示 */}
-            {hasPhotosArray && item.photos.length > 1 && !item.image_url && (
+            {hasPhotosArray && item.photos.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {item.photos.map((_, i) => (
                   <button

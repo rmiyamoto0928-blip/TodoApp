@@ -6,7 +6,7 @@ import { Restaurant, RestaurantGenre } from '@/lib/types'
 import CarRating from '@/components/ui/CarRating'
 import VoiceInput from '@/components/ui/VoiceInput'
 import AddressLocator from '@/components/ui/AddressLocator'
-import SingleImageUpload from '@/components/ui/SingleImageUpload'
+import MultiImageUpload from '@/components/ui/MultiImageUpload'
 import LinksEditor from '@/components/ui/LinksEditor'
 import { RESTAURANT_GENRES } from '@/lib/utils'
 
@@ -281,10 +281,10 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
         </div>
       </div>
 
-      {/* Photo (single image stored in image_url column) */}
+      {/* Photos — up to 5. The first photo becomes image_url for card display. */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">📷 写真</label>
-        <SingleImageUpload imageUrl={form.image_url ?? ''} onChange={(url) => set('image_url', url)} />
+        <label className="text-sm font-semibold text-gray-700">📷 写真（最大5枚）</label>
+        <MultiImageUpload photos={form.photos} onChange={(p) => set('photos', p)} />
       </div>
 
       {/* Links (homepage / SNS / 食べログ etc.) */}
