@@ -198,50 +198,52 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
         </div>
       </div>
 
-      {/* Price & Date */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <label className="text-sm font-semibold text-gray-700">💴 金額（円）</label>
-          <input
-            type="number"
-            value={form.price || ''}
-            onChange={(e) => set('price', Number(e.target.value))}
-            min={0}
-            placeholder="1200"
-            className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-sm font-semibold text-gray-700">🗓 行った日</label>
-          <input
-            type="date"
-            value={form.visitedAt}
-            onChange={(e) => set('visitedAt', e.target.value)}
-            className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-        </div>
+      {/* 行った日 */}
+      <div className="space-y-1">
+        <label className="text-sm font-semibold text-gray-700">🗓 行った日</label>
+        <input
+          type="date"
+          value={form.visitedAt}
+          onChange={(e) => set('visitedAt', e.target.value)}
+          className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
+        />
       </div>
 
-      {/* Hours & Days (collapsed section) */}
-      <details className="bg-gray-50 rounded-xl">
-        <summary className="px-4 py-3 text-sm text-gray-500 cursor-pointer select-none">
-          営業時間・営業日（任意）
-        </summary>
-        <div className="px-4 pb-3 grid grid-cols-2 gap-3">
-          <input
-            value={form.hours}
-            onChange={(e) => set('hours', e.target.value)}
-            placeholder="11:00〜22:00"
-            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-          <input
-            value={form.openDays}
-            onChange={(e) => set('openDays', e.target.value)}
-            placeholder="月〜金"
-            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-        </div>
-      </details>
+      {/* 金額メモ — replaces the dedicated price input. Free-form so the user can list per-item amounts. */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
+        <textarea
+          value={form.memo ?? ''}
+          onChange={(e) => set('memo', e.target.value)}
+          placeholder={'例：\nラーメン 1200円\n餃子 500円\nビール 600円'}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
+      </div>
+
+      {/* 営業時間メモ */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">🕐 営業時間メモ</label>
+        <textarea
+          value={form.hours}
+          onChange={(e) => set('hours', e.target.value)}
+          placeholder={'例：\n月〜金 11:00〜14:00 / 17:30〜22:00\n土日 11:00〜22:00\nラストオーダー 30分前'}
+          rows={3}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
+      </div>
+
+      {/* 営業日メモ */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">📅 営業日メモ</label>
+        <textarea
+          value={form.openDays}
+          onChange={(e) => set('openDays', e.target.value)}
+          placeholder={'例：\n月〜金 / 土日祝休み\n第3火曜定休'}
+          rows={3}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
+      </div>
 
       {/* Rating */}
       <div className="space-y-2">
@@ -289,18 +291,6 @@ export default function RestaurantForm({ initial }: RestaurantFormProps) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🔗 ホームページ・SNS</label>
         <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
-      </div>
-
-      {/* Memo — separate from 感想 (comment). For per-item price breakdowns etc. */}
-      <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
-        <textarea
-          value={form.memo ?? ''}
-          onChange={(e) => set('memo', e.target.value)}
-          placeholder={'例：\nラーメン 1200円\n餃子 500円\nビール 600円'}
-          rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
-        />
       </div>
 
       {/* Favorite */}

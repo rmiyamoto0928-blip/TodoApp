@@ -85,13 +85,14 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
           <span className="text-gray-400 text-sm">/ 5</span>
         </div>
 
-        {/* Info grid */}
+        {/* Info grid (compact 1-line facts) */}
         <div className="grid grid-cols-2 gap-3">
           {[
             { icon: '📍', label: '住所', value: item.address },
-            { icon: '💴', label: '金額', value: formatPrice(item.price || 0) },
-            { icon: '🕐', label: '営業時間', value: item.hours },
-            { icon: '📅', label: '営業日', value: item.openDays },
+            // Hide the standalone price box for new entries (price=0). Old
+            // entries with a saved price still display. Detail-level breakdown
+            // lives in 金額メモ now.
+            { icon: '💴', label: '金額', value: item.price > 0 ? formatPrice(item.price) : '' },
             { icon: '🗓', label: '行った日', value: formatDate(item.visitedAt || item.created_at || '') },
           ]
             .filter((r) => r.value)
@@ -105,6 +106,22 @@ export default function RestaurantDetail({ item: initial }: { item: Restaurant }
               </div>
             ))}
         </div>
+
+        {/* Hours memo — multi-line so render as its own block to preserve newlines. */}
+        {item.hours && (
+          <div className="bg-gray-50 rounded-2xl p-4">
+            <h2 className="text-sm font-bold text-gray-700 mb-1">🕐 営業時間</h2>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.hours}</p>
+          </div>
+        )}
+
+        {/* Open-days memo */}
+        {item.openDays && (
+          <div className="bg-gray-50 rounded-2xl p-4">
+            <h2 className="text-sm font-bold text-gray-700 mb-1">📅 営業日</h2>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{item.openDays}</p>
+          </div>
+        )}
 
         {/* Foods */}
         {item.foods && item.foods.length > 0 && (

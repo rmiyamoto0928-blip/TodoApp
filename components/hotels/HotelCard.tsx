@@ -52,7 +52,9 @@ export default function HotelCard({ item, rank, onFavoriteToggle }: HotelCardPro
               <span>📍</span>
               <span className="truncate">{item.address}</span>
             </div>
-            <span className="text-xs text-gray-400 shrink-0">{formatPrice(item.price)}</span>
+            {item.price > 0 && (
+              <span className="text-xs text-gray-400 shrink-0">{formatPrice(item.price)}</span>
+            )}
           </div>
           <div className="text-xs text-gray-400 mt-0.5">{formatDate(item.visitedAt)}</div>
         </div>

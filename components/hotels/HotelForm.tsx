@@ -132,28 +132,27 @@ export default function HotelForm({ initial }: { initial?: Hotel }) {
         </div>
       </div>
 
-      {/* Price & Date */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <label className="text-sm font-semibold text-gray-700">💴 金額（円）</label>
-          <input
-            type="number"
-            value={form.price || ''}
-            onChange={(e) => set('price', Number(e.target.value))}
-            min={0}
-            placeholder="15000"
-            className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-sm font-semibold text-gray-700">🗓 行った日</label>
-          <input
-            type="date"
-            value={form.visitedAt}
-            onChange={(e) => set('visitedAt', e.target.value)}
-            className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
-          />
-        </div>
+      {/* 行った日 */}
+      <div className="space-y-1">
+        <label className="text-sm font-semibold text-gray-700">🗓 行った日</label>
+        <input
+          type="date"
+          value={form.visitedAt}
+          onChange={(e) => set('visitedAt', e.target.value)}
+          className="w-full px-3 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
+        />
+      </div>
+
+      {/* 金額メモ — replaces the dedicated price input */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
+        <textarea
+          value={form.memo ?? ''}
+          onChange={(e) => set('memo', e.target.value)}
+          placeholder={'例：\n素泊まり 12000円\n夕食 5000円\n駐車場 1000円'}
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
+        />
       </div>
 
       {/* Sub-ratings */}
@@ -232,18 +231,6 @@ export default function HotelForm({ initial }: { initial?: Hotel }) {
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700">🔗 公式サイト・SNS</label>
         <LinksEditor links={form.links ?? []} onChange={(l) => set('links', l)} />
-      </div>
-
-      {/* Memo — itemized prices etc. */}
-      <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-700">💰 金額メモ</label>
-        <textarea
-          value={form.memo ?? ''}
-          onChange={(e) => set('memo', e.target.value)}
-          placeholder={'例：\n素泊まり 12000円\n夕食 5000円\n駐車場 1000円'}
-          rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none"
-        />
       </div>
 
       {/* Favorite */}

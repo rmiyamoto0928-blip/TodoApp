@@ -68,7 +68,9 @@ export default function RestaurantCard({ item, rank, onFavoriteToggle, userLocat
               <span>📍</span>
               <span className="truncate">{item.address || '住所未設定'}</span>
             </div>
-            <span className="text-xs text-gray-400 shrink-0">{formatPrice(item.price || 0)}</span>
+            {item.price > 0 && (
+              <span className="text-xs text-gray-400 shrink-0">{formatPrice(item.price)}</span>
+            )}
           </div>
           <div className="flex items-center justify-between mt-0.5">
             <div className="text-xs text-gray-400">{formatDate(item.visitedAt || item.created_at || '')}</div>

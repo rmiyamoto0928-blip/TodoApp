@@ -79,7 +79,7 @@ export default function SpotDetail({ item: initial }: { item: Spot }) {
         <div className="grid grid-cols-2 gap-3">
           {[
             { icon: '📍', label: '住所', value: item.address },
-            { icon: '💴', label: '金額', value: formatPrice(item.price) },
+            { icon: '💴', label: '金額', value: item.price > 0 ? formatPrice(item.price) : '' },
             { icon: '🗓', label: '行った日', value: formatDate(item.visitedAt) },
           ].filter((r) => r.value).map((row) => (
             <div key={row.label} className="bg-gray-50 rounded-xl p-3">
