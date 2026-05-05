@@ -14,6 +14,10 @@ const tabs = [
 export default function TabNavigation() {
   const pathname = usePathname()
 
+  // Don't render the tab bar on the login screen — feels cleaner and avoids
+  // a flash of nav links to an unauthenticated user.
+  if (pathname === '/login') return null
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-100 safe-area-pb">
       <div className="flex max-w-lg mx-auto">

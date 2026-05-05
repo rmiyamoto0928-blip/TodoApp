@@ -10,6 +10,18 @@ export const metadata: Metadata = {
   title: 'レビューノート',
   description: '飲食店・ホテル・遊びスポットのレビュー管理アプリ',
   manifest: '/manifest.json',
+  // Personal/private app — explicitly opt out of indexing in addition to the
+  // X-Robots-Tag header and robots.ts rules.
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

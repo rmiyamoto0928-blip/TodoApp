@@ -6,6 +6,7 @@ import RestaurantCard from '@/components/restaurants/RestaurantCard'
 import HotelCard from '@/components/hotels/HotelCard'
 import SpotCard from '@/components/spots/SpotCard'
 import SearchBar from '@/components/ui/SearchBar'
+import LogoutButton from '@/components/layout/LogoutButton'
 import { searchFilter } from '@/lib/utils'
 
 type Tab = 'all' | 'restaurants' | 'hotels' | 'spots'
@@ -92,7 +93,10 @@ export default function FavoritesPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="sticky top-0 z-40 bg-[#f8fafc] px-4 pt-4 pb-2 space-y-2">
-        <h1 className="text-xl font-bold text-gray-900">お気に入り ♥</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900">お気に入り ♥</h1>
+          <LogoutButton />
+        </div>
         <SearchBar value={search} onChange={setSearch} placeholder="名前・地名で検索" />
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
