@@ -12,6 +12,12 @@ const PUBLIC_PREFIXES = [
   '/login',
   '/api/login',
   '/api/logout',
+  // /api/upload uses the Vercel Blob handleUpload protocol. The 2nd-stage
+  // `blob.upload-completed` callback comes from Vercel Blob infrastructure
+  // without our session cookie (it's authenticated by HMAC signed with
+  // BLOB_READ_WRITE_TOKEN, which handleUpload verifies internally). The route
+  // itself performs an extra session check on the 1st-stage browser request.
+  '/api/upload',
   '/_next',
   '/favicon',
   '/icon',
