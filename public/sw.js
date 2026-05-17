@@ -1,5 +1,5 @@
 // Bump this when changing cached routes / icon so old clients self-evict.
-const CACHE_NAME = 'review-app-v2'
+const CACHE_NAME = 'review-app-v3'
 const STATIC_ASSETS = ['/', '/restaurants', '/hotels', '/spots', '/plan', '/plans', '/favorites']
 
 self.addEventListener('install', (e) => {
