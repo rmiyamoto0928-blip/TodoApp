@@ -38,11 +38,19 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
     const uploaded: string[] = []
     try {
       for (const file of toUpload) {
-        const blob = await upload(file.name, file, {
-          access: 'public',
-          handleUploadUrl: '/api/upload',
-          contentType: file.type,
-        })
+        // 60s timeout — if the PUT to blob storage hangs (CSP block, bad
+        // network, etc.) the user sees a real error instead of an infinite spinner.
+        const timeoutMs = 60_000
+        const blob = await Promise.race<{ url: string }>([
+          upload(file.name, file, {
+            access: 'public',
+            handleUploadUrl: '/api/upload',
+            contentType: file.type,
+          }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('upload timed out after 60s')), timeoutMs)
+          ),
+        ])
         uploaded.push(blob.url)
       }
       onChange([...photos, ...uploaded])

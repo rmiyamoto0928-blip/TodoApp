@@ -12,9 +12,12 @@ const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.vercel-storage.com https://www.google.com https://maps.googleapis.com https://maps.gstatic.com",
+  "img-src 'self' data: blob: https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://www.google.com https://maps.googleapis.com https://maps.gstatic.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.vercel-storage.com https://blob.vercel-storage.com https://nominatim.openstreetmap.org https://mreversegeocoder.gsi.go.jp https://www.google.com",
+  // Vercel Blob client uploads PUT directly to the store's dedicated subdomain
+  // (e.g. <store>.public.blob.vercel-storage.com). CSP wildcards only span a
+  // single label, so we need both *.vercel-storage.com AND *.public.blob.vercel-storage.com.
+  "connect-src 'self' https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://blob.vercel-storage.com https://api.vercel.com https://nominatim.openstreetmap.org https://mreversegeocoder.gsi.go.jp https://www.google.com",
   "frame-src 'self' https://www.google.com https://maps.google.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
