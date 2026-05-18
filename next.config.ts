@@ -10,7 +10,8 @@ import type { NextConfig } from 'next'
 // - connect-src allows the Vercel Blob direct upload URL plus the geocode proxies
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+  // 'wasm-unsafe-eval' lets heic2any's libheif decoder run (it ships WASM).
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://www.google.com https://maps.googleapis.com https://maps.gstatic.com",
   "font-src 'self' data:",

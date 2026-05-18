@@ -11,17 +11,45 @@ interface MultiImageUploadProps {
 }
 
 /**
+ * Heuristic for "this looks like a HEIC/HEIF file".
+ *
+ * iOS sometimes hands us a File with empty `type` (especially when picked via
+ * "Photos" app rather than "Camera"), so we also check the extension.
+ */
+function isHeicFile(file: File): boolean {
+  if (file.type === 'image/heic' || file.type === 'image/heif') return true
+  return /\.(heic|heif)$/i.test(file.name)
+}
+
+/**
+ * Convert HEIC/HEIF → JPEG entirely in the browser using heic2any. Lazy-loaded
+ * so the WASM/decoder isn't shipped to users who never touch HEIC files.
+ */
+async function heicToJpeg(file: File): Promise<File> {
+  const { default: heic2any } = await import('heic2any')
+  const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 })
+  // heic2any returns Blob | Blob[] (multi-image HEIC sequences). Take the first.
+  const blob = Array.isArray(out) ? out[0] : out
+  const jpegName = file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg')
+  return new File([blob], jpegName, { type: 'image/jpeg' })
+}
+
+/**
  * Multi-image uploader (up to maxPhotos, default 5). Each file streams directly
  * to Vercel Blob via the client-upload flow — sidesteps the 4.5MB function
- * payload limit. Photos are appended in upload order; tap × on a thumbnail
- * to remove. The first photo (photos[0]) is what the server stores in the
- * `image_url` column for back-compat with cards / list view.
+ * payload limit. HEIC files are transparently converted to JPEG in the browser
+ * before upload so the saved file works on every device.
+ *
+ * Photos are appended in upload order; tap × on a thumbnail to remove. The
+ * first photo (photos[0]) is what the server stores in the `image_url` column
+ * for back-compat with cards / list view.
  */
 export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: MultiImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [uploading, setUploading] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'converting' | 'uploading'>('idle')
   const [error, setError] = useState<string | null>(null)
 
+  const busy = phase !== 'idle'
   const remaining = Math.max(0, maxPhotos - photos.length)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,16 +59,21 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
     e.target.value = ''
     if (fileArray.length === 0) return
     setError(null)
-    setUploading(true)
 
-    // Allow multi-select but cap at remaining slots.
     const toUpload = fileArray.slice(0, remaining)
     const uploaded: string[] = []
     try {
-      for (const file of toUpload) {
-        // 60s timeout — if the PUT to blob storage hangs (CSP block, bad
-        // network, etc.) the user sees a real error instead of an infinite spinner.
-        const timeoutMs = 60_000
+      for (const original of toUpload) {
+        let file = original
+        if (isHeicFile(original)) {
+          setPhase('converting')
+          file = await heicToJpeg(original)
+        }
+
+        setPhase('uploading')
+        // 90s timeout — HEIC conversion + big-photo upload from cellular can
+        // be slow on iPhone. Surfaces a clear error instead of an infinite spinner.
+        const timeoutMs = 90_000
         const blob = await Promise.race<{ url: string }>([
           upload(file.name, file, {
             access: 'public',
@@ -48,7 +81,7 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
             contentType: file.type,
           }),
           new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('upload timed out after 60s')), timeoutMs)
+            setTimeout(() => reject(new Error('upload timed out after 90s')), timeoutMs)
           ),
         ])
         uploaded.push(blob.url)
@@ -58,10 +91,9 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
       const msg = err instanceof Error ? err.message : String(err)
       setError(msg)
       console.error('[image upload]', err)
-      // Still surface anything that did succeed before the error.
       if (uploaded.length > 0) onChange([...photos, ...uploaded])
     } finally {
-      setUploading(false)
+      setPhase('idle')
     }
   }
 
@@ -94,10 +126,12 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
+            disabled={busy}
             className="w-24 h-24 rounded-xl border-2 border-dashed border-sky-300 flex flex-col items-center justify-center text-sky-400 hover:bg-sky-50 transition-colors disabled:opacity-60"
           >
-            {uploading ? (
+            {phase === 'converting' ? (
+              <span className="text-[11px] text-center leading-tight">HEIC<br />変換中…</span>
+            ) : phase === 'uploading' ? (
               <span className="text-xs">アップロード中…</span>
             ) : (
               <>
@@ -110,7 +144,7 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           multiple
           className="hidden"
           onChange={handleFileChange}
@@ -120,7 +154,7 @@ export default function MultiImageUpload({ photos, onChange, maxPhotos = 5 }: Mu
         {photos.length} / {maxPhotos} 枚
         {photos.length > 0 && '（先頭の写真がカード一覧に表示されます）'}
       </p>
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500 break-all">{error}</p>}
     </div>
   )
 }
