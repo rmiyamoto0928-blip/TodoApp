@@ -18,7 +18,12 @@ const csp = [
   // Vercel Blob client uploads PUT directly to the store's dedicated subdomain
   // (e.g. <store>.public.blob.vercel-storage.com). CSP wildcards only span a
   // single label, so we need both *.vercel-storage.com AND *.public.blob.vercel-storage.com.
-  "connect-src 'self' https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://blob.vercel-storage.com https://api.vercel.com https://nominatim.openstreetmap.org https://mreversegeocoder.gsi.go.jp https://www.google.com",
+  // Vercel Blob client uploads route via https://vercel.com/api/blob (NOT
+  // *.vercel-storage.com). See node_modules/@vercel/blob/dist/chunk-*.js:
+  //   var defaultVercelBlobApiUrl = "https://vercel.com/api/blob";
+  // Without vercel.com here the browser CSP blocks the upload silently → the
+  // "アップロード中…" spinner hangs forever.
+  "connect-src 'self' https://vercel.com https://*.vercel-storage.com https://*.public.blob.vercel-storage.com https://blob.vercel-storage.com https://api.vercel.com https://nominatim.openstreetmap.org https://mreversegeocoder.gsi.go.jp https://www.google.com",
   "frame-src 'self' https://www.google.com https://maps.google.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
